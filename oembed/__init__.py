@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 '''A Python library that implements an OEmbed consumer to use with OEmbed providers.
 
 Based on reference from http://oembed.com/
@@ -52,6 +53,12 @@ LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
 OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE
 
+--------------
+This library has been modified by Héctor Vela(vellonce@gmail.com), to allow responses other than
+"application/json" as several pages return a oEmbed response in documents with
+other mime type
+
+Original project home in https://github.com/abarmat/python-oembed
 '''
 
 import urllib
@@ -303,10 +310,7 @@ class OEmbedEndpoint(object):
             urlApi = self._urlApi.replace('{format}', params['format'])
             del params['format']
                 
-        if '?' in urlApi:
-            return "%s&%s" % (urlApi, urllib.urlencode(params))
-        else:
-            return "%s?%s" % (urlApi, urllib.urlencode(params))
+        return "%s?%s" % (urlApi, urllib.urlencode(params)) 
 
     def get(self, url, **opt):
         '''
@@ -345,6 +349,11 @@ class OEmbedEndpoint(object):
            headers['Content-Type'].find('text/xml') != -1:
             response = OEmbedResponse.newFromXML(raw)
         elif headers['Content-Type'].find('application/json') != -1 or \
+             headers['Content-Type'].find('text/plain') != -1 or \
+             headers['Content-Type'].find('text/x-javascript') != -1 or \
+             headers['Content-Type'].find('text/javascript') != -1 or \
+             headers['Content-Type'].find('js') != -1 or \
+             headers['Content-Type'].find('application/x-javascript') != -1 or \
              headers['Content-Type'].find('text/json') != -1:
             response = OEmbedResponse.newFromJSON(raw)
         else:
